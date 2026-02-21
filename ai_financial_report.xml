@@ -1,0 +1,23 @@
+
+from odoo import models
+import requests
+
+class SaleOrder(models.Model):
+    _inherit = "sale.order"
+
+    def action_ai_suggest_discount(self):
+        prompt = f"Suggest discount strategy for sale order total {self.amount_total}"
+
+        response = requests.post(
+            "https://api.openai.com/v1/chat/completions",
+            headers={
+                "Authorization": "Bearer YOUR_API_KEY",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "gpt-4o-mini",
+                "messages": [{"role": "user", "content": prompt}]
+            }
+        )
+
+        self.message_post(body=str(response.json()))
